@@ -10,6 +10,11 @@ import SwiftUI
 struct ChartDemo1: View {
     let min = 0.0
     let max = 600.0
+    let supportedChartTypes: [ChartType] = [
+        .bar,
+        .line,
+        .area
+    ]
 
     @State var colors: [Color] = Color.defaultColors
     @State var salesVM: SaleViewModel
@@ -22,7 +27,7 @@ struct ChartDemo1: View {
     var body: some View {
         VStack(spacing: 16) {
             Picker("Select chart type", selection: $chartType) {
-                ForEach(ChartType.allCases, id: \.self) { type in
+                ForEach(supportedChartTypes, id: \.self) { type in
                     Text("\(type.rawValue)").tag(type)
                 }
             }
