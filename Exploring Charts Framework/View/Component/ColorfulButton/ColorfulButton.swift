@@ -55,9 +55,9 @@ struct ColorfulButton: View {
         ))
         .onTapGesture {
             // Flip the button and randomize color pallette
-            colors = Color.getRandomHTMLColors(n: colors.count)
             withAnimation {
                 flip.toggle()
+                colors = Color.getRandomHTMLColors(n: colors.count)
             }
 
             // Call additional action

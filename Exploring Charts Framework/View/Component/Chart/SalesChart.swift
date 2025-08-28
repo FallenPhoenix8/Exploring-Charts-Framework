@@ -13,11 +13,11 @@ struct SalesChart: View {
         self.chartType = chartType
         self.colors = colors
     }
-    
+
     let chartType: ChartType
     let colors: [Color]
     let salesVM: SaleViewModel
-    
+
     @State private var animationProgress: Double = 0.0
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -32,15 +32,15 @@ struct SalesChart: View {
     }
 
     // MARK: - Chart builder blocks
-    
+
     @ChartContentBuilder
     private func chartMark(for sale: SaleViewModel.Sale) -> some ChartContent {
         // Scale the sales value by animation progress (0.0 = zero, 1.0 = full value)
         let animatedValue = Double(sale.count) * animationProgress
-        
+
         let x: PlottableValue<String> = .value("Day", sale.day)
         let y: PlottableValue<Double> = .value("Sales", animatedValue)
-        
+
         switch chartType {
         case .bar:
             BarMark(
@@ -70,7 +70,7 @@ struct SalesChart: View {
                 y: y
             )
             .opacity(0.6)
-            
+
             PointMark(x: x, y: y)
         }
     }
@@ -82,11 +82,13 @@ struct SalesChart: View {
         }
     }
 
+    // MARK: - Building Chart
+
     var body: some View {
         Chart {
             chartContent
         }
-        .chartYScale(domain: salesVM.minSalesPerDay...salesVM.maxSalesPerDay)
+        .chartYScale(domain: salesVM.minSalesPerDay ... salesVM.maxSalesPerDay)
         .chartXAxis {
             AxisMarks(position: .bottom) { _ in
                 AxisGridLine()
@@ -112,22 +114,24 @@ struct SalesChart: View {
         .onChange(of: salesVM.refreshHelper) { _, _ in
             restartAnimation()
         }
+        .chartForegroundStyleScale(range: colors)
+        .foregroundStyle(colors.randomElement() ?? Color.accentColor)
     }
-    
+
     // MARK: - Animation Methods
-    
+
     private func startGrowAnimation() {
         animationProgress = 0.0
-        
+
         withAnimation(.spring(response: 1.0, dampingFraction: 0.7)) {
             animationProgress = 1.0
         }
     }
-    
+
     private func restartAnimation() {
         // Immediately reset to zero
         animationProgress = 0.0
-        
+
         // Start growing animation
         withAnimation(.spring(response: 1.0, dampingFraction: 0.7)) {
             animationProgress = 1.0

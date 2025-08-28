@@ -41,6 +41,8 @@ struct ChartDemo1: View {
                         .fill(.regularMaterial)
                         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
                 )
+            
+            ColorfulButton(colors: $colors, dim: 48, offset: 10) {}
         }
     }
 }
