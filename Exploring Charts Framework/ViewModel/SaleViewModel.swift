@@ -12,7 +12,7 @@ class SaleViewModel {
         let id = UUID()
         let day: String
         let dayLegend: String
-        var sales: Int
+        var count: Int
     }
     
     let minSalesPerDay: Int
@@ -31,7 +31,7 @@ class SaleViewModel {
             let sale = Sale(
                 day: day.rawValue.capitalized,
                 dayLegend: String(day.rawValue.prefix(3)),
-                sales: isRandom ? Int.random(in: minSalesPerDay ... maxSalesPerDay) : 0
+                count: isRandom ? Int.random(in: minSalesPerDay ... maxSalesPerDay) : 0
             )
             sales.append(sale)
         }
@@ -59,7 +59,7 @@ class SaleViewModel {
     
     func reset() {
         for i in 0 ..< sales.count {
-            sales[i].sales = 0
+            sales[i].count = 0
         }
     }
 }

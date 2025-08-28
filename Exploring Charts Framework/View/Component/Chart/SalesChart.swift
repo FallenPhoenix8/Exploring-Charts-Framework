@@ -36,7 +36,7 @@ struct SalesChart: View {
     @ChartContentBuilder
     private func chartMark(for sale: SaleViewModel.Sale) -> some ChartContent {
         // Scale the sales value by animation progress (0.0 = zero, 1.0 = full value)
-        let animatedValue = Double(sale.sales) * animationProgress
+        let animatedValue = Double(sale.count) * animationProgress
         
         let x: PlottableValue<String> = .value("Day", sale.day)
         let y: PlottableValue<Double> = .value("Sales", animatedValue)
