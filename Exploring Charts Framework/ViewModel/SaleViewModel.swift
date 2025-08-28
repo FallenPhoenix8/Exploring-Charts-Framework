@@ -8,29 +8,22 @@ import Observation
 
 @Observable
 class SaleViewModel {
-    struct Sale: Identifiable {
-        let id = UUID()
-        let day: String
-        let dayLegend: String
-        var count: Int
-    }
-    
     let minSalesPerDay: Int
     let maxSalesPerDay: Int
     
-    var sales: [Sale]
-    var initialSales: [Sale]
+    var sales: [SaleModel]
+    var initialSales: [SaleModel]
     
     /// This will trigger UI updates when toggled
     private(set) var refreshHelper: Bool = false
     
     /// Generates `sales` for each weekday with `sales` count
-    private func generateSales(isRandom: Bool) -> [Sale] {
-        var sales: [Sale] = []
-        for day in SaleModel.WeekDay.allCases {
-            let sale = Sale(
+    private func generateSales(isRandom: Bool) -> [SaleModel] {
+        var sales: [SaleModel] = []
+        for day in WeekDay.allCases {
+            let sale = SaleModel(
                 day: day.rawValue.capitalized,
-                dayLegend: String(day.rawValue.prefix(3)),
+                dayLegend: String(day.rawValue.capitalized.prefix(3)),
                 count: isRandom ? Int.random(in: minSalesPerDay ... maxSalesPerDay) : 0
             )
             sales.append(sale)

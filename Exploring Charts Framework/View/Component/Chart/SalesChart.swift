@@ -34,7 +34,7 @@ struct SalesChart: View {
     // MARK: - Chart builder blocks
 
     @ChartContentBuilder
-    private func chartMark(for sale: SaleViewModel.Sale) -> some ChartContent {
+    private func chartMark(for sale: SaleModel) -> some ChartContent {
         // Scale the sales value by animation progress (0.0 = zero, 1.0 = full value)
         let animatedValue = Double(sale.count) * animationProgress
 
