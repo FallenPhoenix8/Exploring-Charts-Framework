@@ -1,8 +1,7 @@
-// 
+//
 //  ContentView.swift
 //  Exploring Charts Framework
 //
-    
 
 import SwiftUI
 
@@ -14,7 +13,6 @@ struct ContentView: View {
                     NavigationLink("Chart Demo 1") {
                         ChartDemo1()
                             .navigationTitle(Text("Chart Demo 1"))
-                            .padding()
                     }
                 }
             }
@@ -23,6 +21,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
+#Preview() {
     ContentView()
 }
