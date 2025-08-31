@@ -28,7 +28,19 @@ class SaleViewModel {
             )
             sales.append(sale)
         }
-        sales.sort { $0.day < $1.day }
+        
+        sales.sort(by: {
+            let weekDayNumbers = [
+                "sunday": 0,
+                "monday": 1,
+                "tuesday": 2,
+                "wednesday": 3,
+                "thursday": 4,
+                "friday": 5,
+                "saturday": 6,
+            ]
+            return (weekDayNumbers[$0.day.lowercased()] ?? 7) < (weekDayNumbers[$1.day.lowercased()] ?? 7)
+        })
         return sales
     }
     
