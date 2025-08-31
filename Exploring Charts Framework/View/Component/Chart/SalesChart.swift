@@ -59,11 +59,18 @@ struct SalesChart: View {
                 y: y
             )
             .annotation(position: .top, alignment: .center) {
-                if animatedValue > 0 {
-                    Text("\(Int(animatedValue))")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                if animatedValue > 0, isEditMode {
+                    VStack {
+                        Circle()
+                            .stroke(lineWidth: 2)
+                            .foregroundStyle(.secondary)
+                        
+                        Text("\(Int(animatedValue))")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                    }
+                   
                 }
             }
             .foregroundStyle(by: .value("Day", sale.dayLegend))
@@ -73,7 +80,9 @@ struct SalesChart: View {
                 x: x,
                 y: y
             )
-            PointMark(x: x, y: y)
+            if isEditMode {
+                PointMark(x: x, y: y)
+            }
 
         case .area:
             AreaMark(
@@ -82,7 +91,9 @@ struct SalesChart: View {
             )
             .opacity(0.6)
 
-            PointMark(x: x, y: y)
+            if isEditMode {            
+                PointMark(x: x, y: y)
+            }
         }
     }
 
