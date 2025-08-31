@@ -57,10 +57,14 @@ struct ChartDemo1: View {
         let salesVM: SaleViewModel
         let chartType: ChartType
         let colors: [Color]
+        let isLandscape: Bool
         
         var body: some View {
             SalesChart(salesVM: salesVM, chartType: chartType, colors: colors)
-                .frame(height: 400)
+                .frame(
+                    minHeight: isLandscape ? 250 : 600,
+                    maxHeight: isLandscape ? 250 : .infinity
+                )
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.regularMaterial)
@@ -71,25 +75,16 @@ struct ChartDemo1: View {
 
     var body: some View {
         ScrollView {
-            if isLandscape {
-                Grid {
-                    GridRow {
-                        ChartTypePicker(supportedChartTypes: supportedChartTypes, chartType: $chartType)
-                    }
-                    GridRow {
-                        HStack(spacing: 16) {
-                            ButtonColorSwitcher(colors: $colors)
-                        
-                            Chart(salesVM: salesVM, chartType: chartType, colors: colors)
-                        }
-                    }
+            VStack(spacing: 16) {
+                if isLandscape {
+                    ButtonColorSwitcher(colors: $colors).padding(.vertical)
                 }
-            } else {
-                VStack(spacing: 16) {
-                    ChartTypePicker(supportedChartTypes: supportedChartTypes, chartType: $chartType)
-                    
-                    Chart(salesVM: salesVM, chartType: chartType, colors: colors)
-                    
+                
+                ChartTypePicker(supportedChartTypes: supportedChartTypes, chartType: $chartType)
+                
+                Chart(salesVM: salesVM, chartType: chartType, colors: colors, isLandscape: isLandscape)
+                
+                if !isLandscape {
                     ButtonColorSwitcher(colors: $colors)
                 }
             }
