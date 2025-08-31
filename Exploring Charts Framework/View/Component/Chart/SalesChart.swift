@@ -19,6 +19,7 @@ struct SalesChart: View {
     let salesVM: SaleViewModel
 
     @State private var animationProgress: Double = 0.0
+    @State private var isDragging: Bool = false
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -116,6 +117,31 @@ struct SalesChart: View {
         }
         .chartForegroundStyleScale(range: colors)
         .foregroundStyle(colors.randomElement() ?? Color.accentColor)
+        .chartOverlay { proxy in
+            GeometryReader { geo in
+                    Rectangle()
+                    .fill(.clear)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                isDragging = true
+                                
+                                let location = value.location
+
+                                
+                                let (newDay, salesCount) = proxy.value(at: location, as: (String, Double).self) ?? ("error", -1)
+                                
+                                salesVM.update(day: newDay, count: Int(salesCount))
+                                
+                                
+                            }
+                            .onEnded { value in
+                                isDragging = false
+                            }
+                    )
+            }
+        }
     }
 
     // MARK: - Animation Methods
@@ -141,5 +167,5 @@ struct SalesChart: View {
 
 #Preview {
     let salesVM: SaleViewModel = .init(minSales: 0, maxSales: 600)
-    SalesChart(salesVM: salesVM, chartType: .line, colors: Color.defaultColors)
+    SalesChart(salesVM: salesVM, chartType: .bar, colors: Color.defaultColors)
 }
