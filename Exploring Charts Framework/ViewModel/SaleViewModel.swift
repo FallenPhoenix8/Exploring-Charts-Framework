@@ -69,9 +69,9 @@ class SaleViewModel {
     }
     
     func update(day: String, count: Int) {
-        let sale = sales.first(where: { $0.day == day })
+        let sale = sales.first(where: { $0.dayLegend == day })
         if var sale = sale {
-            let index = sales.firstIndex(where: { $0.day == day })!
+            let index = sales.firstIndex(where: { $0.dayLegend == day })!
             sale.count = count
             sales[index] = sale
         }

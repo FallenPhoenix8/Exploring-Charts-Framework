@@ -18,6 +18,7 @@ struct ChartDemo1: View {
     @State var colors: [Color] = Color.defaultColors
     @State var salesVM: SaleViewModel
     @State var chartType: ChartType = .bar
+    @State var isEditMode: Bool = false
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -53,14 +54,27 @@ struct ChartDemo1: View {
         }
     }
     
+    struct ToolbarIconButton: View {
+        let iconSystemName: String
+        let action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                Image(systemName: iconSystemName)
+            }
+            .padding()
+        }
+    }
+    
     struct Chart: View {
-        let salesVM: SaleViewModel
+        @Binding var salesVM: SaleViewModel
         let chartType: ChartType
         let colors: [Color]
         let isLandscape: Bool
+        let isEditMode: Bool
         
         var body: some View {
-            SalesChart(salesVM: salesVM, chartType: chartType, colors: colors)
+            SalesChart(salesVM: $salesVM, chartType: chartType, colors: colors, isEditMode: isEditMode)
                 .frame(
                     minHeight: isLandscape ? 250 : 600,
                     maxHeight: isLandscape ? 250 : .infinity
@@ -77,21 +91,47 @@ struct ChartDemo1: View {
         ScrollView {
             VStack(spacing: 16) {
                 if isLandscape {
-                    ButtonColorSwitcher(colors: $colors).padding(.vertical)
+//                    ButtonColorSwitcher(colors: $colors).padding(.vertical)
                 }
                 
                 ChartTypePicker(supportedChartTypes: supportedChartTypes, chartType: $chartType)
                 
-                Chart(salesVM: salesVM, chartType: chartType, colors: colors, isLandscape: isLandscape)
+                Chart(
+                    salesVM: $salesVM,
+                    chartType: chartType,
+                    colors: colors,
+                    isLandscape: isLandscape,
+                    isEditMode: isEditMode
+                )
                 
-                if !isLandscape {
-                    ButtonColorSwitcher(colors: $colors)
+//                if !isLandscape {
+//                    ButtonColorSwitcher(colors: $colors)
+//                }
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                HStack {
+                    ToolbarIconButton(iconSystemName: !isEditMode ? "square.and.pencil" : "square") {
+                        withAnimation {
+                            isEditMode.toggle()
+                        }
+                    }
+                    
+                    ToolbarIconButton(iconSystemName: "square.and.arrow.up") {}
                 }
+            }
+
+            ToolbarItem(placement: .bottomBar) {
+                ButtonColorSwitcher(colors: $colors)
             }
         }
     }
 }
 
 #Preview {
-    ChartDemo1()
+    NavigationStack {
+        ChartDemo1()
+            .navigationTitle("Chart Demo 1")
+    }
 }

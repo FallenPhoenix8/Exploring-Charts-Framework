@@ -8,18 +8,28 @@ import Observation
 import SwiftUI
 
 struct SalesChart: View {
-    init(salesVM: SaleViewModel, chartType: ChartType, colors: [Color]) {
-        self.salesVM = salesVM
-        self.chartType = chartType
-        self.colors = colors
-    }
+//    init(chartType: ChartType, colors: [Color], isEditMode: Bool) {
+////        self.salesVM = salesVM
+//        self.chartType = chartType
+//        self.colors = colors
+//        self.isEditMode = isEditMode
+//    }
+    @Binding var salesVM: SaleViewModel
 
     let chartType: ChartType
     let colors: [Color]
-    let salesVM: SaleViewModel
+//    let salesVM: SaleViewModel
+    let isEditMode: Bool
+    
+    
 
     @State private var animationProgress: Double = 0.0
     @State private var isDragging: Bool = false
+    @State private var selectedDay: String? = nil
+    
+    var overlayColor: Color {
+        isEditMode ? .black.opacity(0.1) : .clear
+    }
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -39,7 +49,7 @@ struct SalesChart: View {
         // Scale the sales value by animation progress (0.0 = zero, 1.0 = full value)
         let animatedValue = Double(sale.count) * animationProgress
 
-        let x: PlottableValue<String> = .value("Day", sale.day)
+        let x: PlottableValue<String> = .value("Day", sale.dayLegend)
         let y: PlottableValue<Double> = .value("Sales", animatedValue)
 
         switch chartType {
@@ -81,6 +91,17 @@ struct SalesChart: View {
         ForEach(salesVM.sales) { sale in
             chartMark(for: sale)
         }
+        
+        if isDragging, let selectedDay = selectedDay {
+            let count = salesVM.sales.first(where: { $0.dayLegend == selectedDay })?.count ?? 0
+            RuleMark(y: .value("Sales", count))
+                .foregroundStyle(.red)
+                .lineStyle(.init(lineWidth: 2, dash: [5]))
+                .annotation(position: .topTrailing) {
+                    Text("\(count)")
+                        .font(.caption2)
+                }
+        }
     }
 
     // MARK: - Building Chart
@@ -120,11 +141,15 @@ struct SalesChart: View {
         .chartOverlay { proxy in
             GeometryReader { geo in
                     Rectangle()
-                    .fill(.clear)
+                    .fill(overlayColor)
                     .contentShape(Rectangle())
                     .gesture(
                         DragGesture()
                             .onChanged { value in
+                                if !isEditMode {
+                                    return
+                                }
+                                
                                 isDragging = true
                                 
                                 let location = value.location
@@ -132,7 +157,12 @@ struct SalesChart: View {
                                 
                                 let (newDay, salesCount) = proxy.value(at: location, as: (String, Double).self) ?? ("error", -1)
                                 
+                                print(proxy.value(at: location, as: (String, Double).self) ?? ("error", -1))
+                                
+                                selectedDay = newDay
+                                
                                 salesVM.update(day: newDay, count: Int(salesCount))
+                                
                                 
                                 
                             }
@@ -142,6 +172,7 @@ struct SalesChart: View {
                     )
             }
         }
+        .padding(isEditMode ? .all : Edge.Set())
     }
 
     // MARK: - Animation Methods
@@ -166,6 +197,7 @@ struct SalesChart: View {
 }
 
 #Preview {
-    let salesVM: SaleViewModel = .init(minSales: 0, maxSales: 600)
-    SalesChart(salesVM: salesVM, chartType: .bar, colors: Color.defaultColors)
+    @Previewable @State var salesVM: SaleViewModel = .init(minSales: 0, maxSales: 600)
+    
+    SalesChart(salesVM: $salesVM, chartType: .bar, colors: Color.defaultColors, isEditMode: true)
 }
