@@ -47,6 +47,7 @@ struct ColorfulButton: View {
             Circle()
                 .stroke(lastColor, lineWidth: lineWidth)
                 .frame(width: dim, height: dim)
+                .background(Color.black.gradient.opacity(0.1))
         }
         .rotation3DEffect(flip ? .zero : .degrees(180), axis: (
             x: Double.random(in: -1...1),

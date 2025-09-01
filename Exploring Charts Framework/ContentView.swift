@@ -13,6 +13,9 @@ struct ContentView: View {
                     NavigationLink("Chart Demo 1") {
                         ChartDemo1()
                             .navigationTitle(Text("Chart Demo 1"))
+                        #if os(macOS)
+                            .padding()
+                        #endif
                     }
                 }
             }

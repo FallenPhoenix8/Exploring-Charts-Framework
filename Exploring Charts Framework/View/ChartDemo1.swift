@@ -49,8 +49,10 @@ struct ChartDemo1: View {
     
     struct ButtonColorSwitcher: View {
         @Binding var colors: [Color]
+        let dim: CGFloat
+        
         var body: some View {
-            ColorfulButton(colors: $colors, dim: 48, offset: 10) {}
+            ColorfulButton(colors: $colors, dim: dim, offset: 10) {}
         }
     }
     
@@ -66,18 +68,27 @@ struct ChartDemo1: View {
         }
     }
     
-    struct Chart: View {
+    struct ChartCard: View {
         @Binding var salesVM: SaleViewModel
         let chartType: ChartType
         let colors: [Color]
         let isLandscape: Bool
         let isEditMode: Bool
         
+        #if os(iOS)
+            var minHeight: CGFloat = isLandscape ? 250 : 600
+            var maxHeight: CGFloat = isLandscape ? 250 : .infinity
+        #elseif os(macOS)
+            var minHeight: CGFloat = 600
+            var maxHeight: CGFloat = .infinity
+        #endif
+        
         var body: some View {
             SalesChart(salesVM: $salesVM, chartType: chartType, colors: colors, isEditMode: isEditMode)
+           
                 .frame(
-                    minHeight: isLandscape ? 250 : 600,
-                    maxHeight: isLandscape ? 250 : .infinity
+                    minHeight: minHeight,
+                    maxHeight: maxHeight
                 )
                 .background(
                     RoundedRectangle(cornerRadius: 8)
@@ -96,7 +107,7 @@ struct ChartDemo1: View {
                 
                 ChartTypePicker(supportedChartTypes: supportedChartTypes, chartType: $chartType)
                 
-                Chart(
+                ChartCard(
                     salesVM: $salesVM,
                     chartType: chartType,
                     colors: colors,
@@ -110,17 +121,27 @@ struct ChartDemo1: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            #if os(iOS)
+                ToolbarItemGroup(placement: .topBarLeading) {
                     ToolbarIconButton(iconSystemName: !isEditMode ? "square.and.pencil" : "square") {
-                        withAnimation {
-                            isEditMode.toggle()
-                        }
+                        withAnimation { isEditMode.toggle() }
                     }
-            }
+                }
 
-            ToolbarItem(placement: .bottomBar) {
-                ButtonColorSwitcher(colors: $colors)
-            }
+                ToolbarItem(placement: .bottomBar) {
+                    ButtonColorSwitcher(colors: $colors, dim: 40)
+                }
+            #elseif os(macOS)
+                ToolbarItemGroup(placement: .navigation) {
+                    ToolbarIconButton(iconSystemName: !isEditMode ? "square.and.pencil" : "square") {
+                        withAnimation { isEditMode.toggle() }
+                    }
+                }
+
+                ToolbarItem(placement: .navigation) {
+                    ButtonColorSwitcher(colors: $colors, dim: 24)
+                }
+            #endif
         }
     }
 }
