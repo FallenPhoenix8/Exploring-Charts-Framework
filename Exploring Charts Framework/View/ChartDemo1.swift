@@ -110,16 +110,12 @@ struct ChartDemo1: View {
             }
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                HStack {
+            ToolbarItem(placement: .navigation) {
                     ToolbarIconButton(iconSystemName: !isEditMode ? "square.and.pencil" : "square") {
                         withAnimation {
                             isEditMode.toggle()
                         }
                     }
-                    
-                    ToolbarIconButton(iconSystemName: "square.and.arrow.up") {}
-                }
             }
 
             ToolbarItem(placement: .bottomBar) {
