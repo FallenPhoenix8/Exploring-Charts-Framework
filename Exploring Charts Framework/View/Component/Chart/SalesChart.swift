@@ -13,13 +13,11 @@ struct SalesChart: View {
     let chartType: ChartType
     let colors: [Color]
     let isEditMode: Bool
-    
-    
 
     @State private var animationProgress: Double = 0.0
     @State private var isDragging: Bool = false
     @State private var selectedDay: String? = nil
-    
+
     var overlayColor: Color {
         isEditMode ? .black.opacity(0.1) : .clear
     }
@@ -57,13 +55,12 @@ struct SalesChart: View {
                         Circle()
                             .stroke(lineWidth: 2)
                             .foregroundStyle(.secondary)
-                        
+
                         Text("\(Int(animatedValue))")
                             .font(.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
                     }
-                   
                 }
             }
             .foregroundStyle(by: .value("Day", sale.dayLegend))
@@ -95,7 +92,7 @@ struct SalesChart: View {
         ForEach(salesVM.sales) { sale in
             chartMark(for: sale)
         }
-        
+
         if isDragging, let selectedDay = selectedDay {
             let count = salesVM.sales.first(where: { $0.dayLegend == selectedDay })?.count ?? 0
             RuleMark(y: .value("Sales", count))
@@ -143,34 +140,41 @@ struct SalesChart: View {
         .chartForegroundStyleScale(range: colors)
         .foregroundStyle(colors[0])
         .chartOverlay { proxy in
-            GeometryReader { geo in
-                    Rectangle()
+            GeometryReader { chartGeo in // Get the geometry of the chart's plot area
+                Rectangle()
                     .fill(overlayColor)
                     .contentShape(Rectangle())
                     .gesture(
-                        DragGesture()
+                        DragGesture(minimumDistance: 0) // Respond immediately on touch
                             .onChanged { value in
-                                if !isEditMode {
-                                    return
-                                }
-                                
-                                isDragging = true
-                                
-                                let location = value.location
+                                if !isEditMode || salesVM.sales.isEmpty { return }
 
-                                
-                                let (newDay, salesCount) = proxy.value(at: location, as: (String, Double).self) ?? ("error", -1)
-                                
-                                print(proxy.value(at: location, as: (String, Double).self) ?? ("error", -1))
-                                
-                                selectedDay = newDay
-                                
-                                salesVM.update(day: newDay, count: Int(salesCount))
-                                
-                                
-                                
+                                // --- Manual X-Axis Hit-Testing ---
+
+                                // 1. Calculate the width of each bar's "band"
+                                let bandWidth = chartGeo.size.width / CGFloat(salesVM.sales.count)
+
+                                // 2. Determine the index of the bar at the drag's start location
+                                let index = Int(value.startLocation.x / bandWidth)
+
+                                // 3. Make sure the calculated index is valid
+                                guard index >= 0, index < salesVM.sales.count else { return }
+
+                                // 4. Get the day to update from our data array
+                                let dayToUpdate = salesVM.sales[index].dayLegend
+
+                                // --- Use Proxy for Y-Axis Value ---
+
+                                // 5. Use the proxy to get the new sales value from the current Y position
+                                guard let (_, salesCount) = proxy.value(at: value.location, as: (String, Double).self) else { return }
+
+                                // --- Update State & ViewModel ---
+
+                                isDragging = true
+                                selectedDay = dayToUpdate
+                                salesVM.update(day: dayToUpdate, count: Int(max(0, salesCount)))
                             }
-                            .onEnded { value in
+                            .onEnded { _ in
                                 isDragging = false
                             }
                     )
@@ -202,6 +206,6 @@ struct SalesChart: View {
 
 #Preview {
     @Previewable @State var salesVM: SaleViewModel = .init(minSales: 0, maxSales: 600)
-    
+
     SalesChart(salesVM: $salesVM, chartType: .bar, colors: Color.defaultColors, isEditMode: true)
 }
