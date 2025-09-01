@@ -8,17 +8,10 @@ import Observation
 import SwiftUI
 
 struct SalesChart: View {
-//    init(chartType: ChartType, colors: [Color], isEditMode: Bool) {
-////        self.salesVM = salesVM
-//        self.chartType = chartType
-//        self.colors = colors
-//        self.isEditMode = isEditMode
-//    }
     @Binding var salesVM: SaleViewModel
 
     let chartType: ChartType
     let colors: [Color]
-//    let salesVM: SaleViewModel
     let isEditMode: Bool
     
     
@@ -91,7 +84,7 @@ struct SalesChart: View {
             )
             .opacity(0.6)
 
-            if isEditMode {            
+            if isEditMode {
                 PointMark(x: x, y: y)
             }
         }
@@ -148,7 +141,7 @@ struct SalesChart: View {
             restartAnimation()
         }
         .chartForegroundStyleScale(range: colors)
-        .foregroundStyle(colors.randomElement() ?? Color.accentColor)
+        .foregroundStyle(colors[0])
         .chartOverlay { proxy in
             GeometryReader { geo in
                     Rectangle()

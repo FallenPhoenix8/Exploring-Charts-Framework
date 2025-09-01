@@ -11,8 +11,8 @@ class SaleViewModel {
     let minSalesPerDay: Int
     let maxSalesPerDay: Int
     
-    var sales: [SaleModel]
-    var initialSales: [SaleModel]
+    private(set) var sales: [SaleModel]
+    private(set) var initialSales: [SaleModel]
     
     /// This will trigger UI updates when toggled
     private(set) var refreshHelper: Bool = false
