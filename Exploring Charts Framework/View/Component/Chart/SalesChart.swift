@@ -149,7 +149,7 @@ struct SalesChart: View {
                             .onChanged { value in
                                 if !isEditMode || salesVM.sales.isEmpty { return }
 
-                                // --- Manual X-Axis Hit-Testing ---
+                                // MARK: - Manual X-Axis Hit-Testing
 
                                 // 1. Calculate the width of each bar's "band"
                                 let bandWidth = chartGeo.size.width / CGFloat(salesVM.sales.count)
