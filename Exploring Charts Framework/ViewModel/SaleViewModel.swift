@@ -46,7 +46,7 @@ class SaleViewModel {
     
     /// Generates ViewModel with random sale numbers in given range
     /// `minSales ... maxSales`
-    init(minSales: Int, maxSales: Int) {
+    init(minSales: Int, maxSales: Int, isDescendingCount: Bool = false) {
         self.sales = []
         self.initialSales = []
         self.maxSalesPerDay = maxSales
@@ -54,6 +54,10 @@ class SaleViewModel {
         
         self.initialSales = generateSales(isRandom: false)
         self.sales = generateSales(isRandom: true)
+        
+        if isDescendingCount {
+            sales.sort { $0.count > $1.count }
+        }
     }
     
     /// Refreshes `sales` by temporarily setting all sales values to 0.

@@ -10,9 +10,17 @@ struct ContentView: View {
         NavigationStack {
             VStack {
                 Form {
-                    NavigationLink("Chart Demo 1") {
+                    NavigationLink("Chart Editor") {
                         ChartDemo1()
-                            .navigationTitle(Text("Chart Demo 1"))
+                            .navigationTitle(Text("Chart Editor"))
+                        #if os(macOS)
+                            .padding()
+                        #endif
+                    }
+                    
+                    NavigationLink("Funnel Chart") {
+                        ChartDemo2()
+                            .navigationTitle(Text("Funnel Chart"))
                         #if os(macOS)
                             .padding()
                         #endif

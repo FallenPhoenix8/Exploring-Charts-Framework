@@ -76,8 +76,14 @@ struct ChartDemo1: View {
         let isEditMode: Bool
         
         #if os(iOS)
-            var minHeight: CGFloat = isLandscape ? 250 : 600
-            var maxHeight: CGFloat = isLandscape ? 250 : .infinity
+            var minHeight: CGFloat {
+                isLandscape ? 250 : 600
+            }
+
+            var maxHeight: CGFloat {
+                isLandscape ? 250 : .infinity
+            }
+
         #elseif os(macOS)
             var minHeight: CGFloat = 600
             var maxHeight: CGFloat = .infinity
